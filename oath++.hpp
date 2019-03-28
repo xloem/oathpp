@@ -24,31 +24,31 @@ public:
 	bindata base32Decode(std::string const & base32str);
 	std::string base32Encode(bindata const & binstr);
 
-	std::string hotpGenerate(std::string const & secret,
+	std::string hotpGenerate(bindata const & secret,
 	                         uint64_t movingFactor,
 	                         unsigned digits,
 	                         bool addChecksum = false,
 	                         size_t truncationOffset = SIZE_MAX);
 	
-	int hotpValidate(std::string const & secret,
+	int hotpValidate(bindata const & secret,
 	                 uint64_t startMovingFactor,
 	                 size_t window,
 	                 std::string const & otp);
 
-	int hotpValidate(std::string const & secret,
+	int hotpValidate(bindata const & secret,
 	                 uint64_t startMovingFactor,
 	                 size_t window,
 	                 unsigned digits,
 	                 std::function<bool(std::string const &)> cmpOtp);
 
-	std::string totpGenerate(std::string const & secret,
+	std::string totpGenerate(bindata const & secret,
 	                         unsigned digits,
 	                         time_t now = 0,
 	                         unsigned timeStepSize = 30,
 	                         time_t startOffset = 0,
 	                         totpHmac hmac = SHA1);
 
-	int totpValidate(std::string const & secret,
+	int totpValidate(bindata const & secret,
 	                 size_t window,
 	                 std::string const & otp,
 	                 time_t now = 0,
@@ -56,7 +56,7 @@ public:
 	                 time_t startOffset = 0,
 	                 totpHmac hmac = SHA1);
 
-	int totpValidate(std::string const & secret,
+	int totpValidate(bindata const & secret,
 	                 size_t window,
 	                 std::function<bool(std::string const &)> cmpOtp,
 	                 unsigned digits,

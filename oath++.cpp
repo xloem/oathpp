@@ -98,7 +98,7 @@ std::string Oath::base32Encode(bindata const & binstr)
 	return ret;
 }
 
-std::string Oath::hotpGenerate(std::string const & secret,
+std::string Oath::hotpGenerate(Oath::bindata const & secret,
                                uint64_t movingFactor,
                                unsigned digits,
                                bool addChecksum,
@@ -106,7 +106,7 @@ std::string Oath::hotpGenerate(std::string const & secret,
 {
 	std::string output(OATH_HOTP_LENGTH(digits, addChecksum), 0);
 
-	checkErr(oath_hotp_generate(secret.c_str(),
+	checkErr(oath_hotp_generate(reinterpret_cast<const char *>(secret.data()),
 	                            secret.size(),
 	                            movingFactor,
 	                            digits,
@@ -117,12 +117,12 @@ std::string Oath::hotpGenerate(std::string const & secret,
 	return output;
 }
 
-int Oath::hotpValidate(std::string const & secret,
+int Oath::hotpValidate(Oath::bindata const & secret,
                        uint64_t startMovingFactor,
                        size_t window,
                        std::string const & otp)
 {
-	return checkErr(oath_hotp_validate(secret.data(),
+	return checkErr(oath_hotp_validate(reinterpret_cast<const char *>(secret.data()),
 	                                   secret.size(),
 	                                   startMovingFactor,
 	                                   window,
@@ -143,13 +143,13 @@ static int validate_strcmp_function(void * handle, const char * testOtp)
 	}
 }
 
-int Oath::hotpValidate(std::string const & secret,
+int Oath::hotpValidate(Oath::bindata const & secret,
                        uint64_t startMovingFactor,
                        size_t window,
                        unsigned digits,
                        std::function<bool(std::string const &)> strcmpOtp)
 {
-	return checkErr(oath_hotp_validate_callback(secret.data(),
+	return checkErr(oath_hotp_validate_callback(reinterpret_cast<const char *>(secret.data()),
 	                                            secret.size(),
 	                                            startMovingFactor,
 	                                            window,
@@ -175,7 +175,7 @@ static inline int hmac2flags(Oath::totpHmac hmac)
 	};
 }
 
-std::string Oath::totpGenerate(std::string const & secret,
+std::string Oath::totpGenerate(Oath::bindata const & secret,
                                unsigned digits,
                                time_t now,
                                unsigned timeStepSize,
@@ -185,7 +185,7 @@ std::string Oath::totpGenerate(std::string const & secret,
 	std::string ret(digits, 0);
 	int flags = hmac2flags(hmac);
 	(void) flags;
-	checkErr(oath_totp_generate2(secret.data(),
+	checkErr(oath_totp_generate2(reinterpret_cast<const char *>(secret.data()),
 	                             secret.size(),
 	                             now ? now : time(nullptr),
 	                             timeStepSize,
@@ -196,7 +196,7 @@ std::string Oath::totpGenerate(std::string const & secret,
 	return ret;
 }
 
-int Oath::totpValidate(std::string const & secret,
+int Oath::totpValidate(Oath::bindata const & secret,
                        size_t window,
                        std::string const & otp,
                        time_t now,
@@ -208,7 +208,7 @@ int Oath::totpValidate(std::string const & secret,
 	uint64_t otpCounter;
 	int flags = hmac2flags(hmac);
 	(void) flags;
-	checkErr(oath_totp_validate4(secret.data(),
+	checkErr(oath_totp_validate4(reinterpret_cast<const char *>(secret.data()),
 	                             secret.size(),
 	                             now ? now : time(nullptr),
 	                             timeStepSize,
@@ -221,7 +221,7 @@ int Oath::totpValidate(std::string const & secret,
 	return otpPos;
 }
 
-int Oath::totpValidate(std::string const & secret,
+int Oath::totpValidate(Oath::bindata const & secret,
                        size_t window,
 	               std::function<bool(std::string const &)> cmpOtp,
                        unsigned digits,
@@ -234,7 +234,7 @@ int Oath::totpValidate(std::string const & secret,
 	uint64_t otpCounter;
 	int flags = hmac2flags(hmac);
 	(void) flags;
-	checkErr(oath_totp_validate4_callback(secret.data(),
+	checkErr(oath_totp_validate4_callback(reinterpret_cast<const char *>(secret.data()),
 	                                      secret.size(),
 	                                      now ? now : time(nullptr),
 	                                      timeStepSize,
