@@ -12,6 +12,11 @@ target_link_libraries (oath++ ${OATH_LIBRARIES})
 target_include_directories (oath++ PUBLIC "${PROJECT_SOURCE_DIR}" ${OATH_INCLUDE_DIRS})
 target_compile_options (oath++ PUBLIC ${OATH_CFLAGS_OTHER})
 
+install(TARGETS oath++ DESTINATION lib)
+install(FILES oath++.hpp DESTINATION include)
+
+
+
 enable_testing()
 link_libraries(oath++)
 add_executable(test-basic test/basic.cpp)
