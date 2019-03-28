@@ -56,8 +56,12 @@ Oath::~Oath()
 
 Oath::bindata Oath::hex2bin(std::string const & hexstr)
 {
-	size_t len;
-	checkErr(oath_hex2bin(hexstr.c_str(), nullptr, &len));
+	size_t len = 0;
+	int interim = oath_hex2bin(hexstr.c_str(), nullptr, &len);
+	if (interim != OATH_TOO_SMALL_BUFFER)
+	{
+		checkErr(interim);
+	}
 	bindata ret(len, 0);
 	checkErr(oath_hex2bin(hexstr.c_str(), reinterpret_cast<char*>(ret.data()), &len));
 	return ret;
@@ -187,7 +191,7 @@ std::string Oath::totpGenerate(Oath::bindata const & secret,
 	(void) flags;
 	checkErr(oath_totp_generate2(reinterpret_cast<const char *>(secret.data()),
 	                             secret.size(),
-	                             now ? now : time(nullptr),
+	                             now != ~0 ? now : time(nullptr),
 	                             timeStepSize,
 	                             startOffset,
 	                             digits,
@@ -210,7 +214,7 @@ int Oath::totpValidate(Oath::bindata const & secret,
 	(void) flags;
 	checkErr(oath_totp_validate4(reinterpret_cast<const char *>(secret.data()),
 	                             secret.size(),
-	                             now ? now : time(nullptr),
+	                             now != ~0 ? now : time(nullptr),
 	                             timeStepSize,
 	                             startOffset,
 	                             window,
@@ -236,7 +240,7 @@ int Oath::totpValidate(Oath::bindata const & secret,
 	(void) flags;
 	checkErr(oath_totp_validate4_callback(reinterpret_cast<const char *>(secret.data()),
 	                                      secret.size(),
-	                                      now ? now : time(nullptr),
+	                                      now != ~0 ? now : time(nullptr),
 	                                      timeStepSize,
 	                                      startOffset,
 	                                      digits,
@@ -260,7 +264,7 @@ time_t Oath::authenticateUsersfile(std::string usersfile,
 	                                     usersname.c_str(),
 	                                     otp.c_str(),
 	                                     window,
-	                                     passwd.size() ? passwd.c_str() : nullptr,
+	                                     passwd.c_str(),
 	                                     &lastOtp));
 	return lastOtp;
 }

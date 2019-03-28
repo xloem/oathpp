@@ -19,10 +19,10 @@ public:
 		SHA512
 	};
 
-	bindata hex2bin(std::string const & hexstr);
-	std::string bin2hex(bindata const & binstr);
-	bindata base32Decode(std::string const & base32str);
-	std::string base32Encode(bindata const & binstr);
+	static bindata hex2bin(std::string const & hexstr);
+	static std::string bin2hex(bindata const & binstr);
+	static bindata base32Decode(std::string const & base32str);
+	static std::string base32Encode(bindata const & binstr);
 
 	std::string hotpGenerate(bindata const & secret,
 	                         uint64_t movingFactor,
@@ -43,7 +43,7 @@ public:
 
 	std::string totpGenerate(bindata const & secret,
 	                         unsigned digits,
-	                         time_t now = 0,
+	                         time_t now = ~0,
 	                         unsigned timeStepSize = 30,
 	                         time_t startOffset = 0,
 	                         totpHmac hmac = SHA1);
@@ -51,7 +51,7 @@ public:
 	int totpValidate(bindata const & secret,
 	                 size_t window,
 	                 std::string const & otp,
-	                 time_t now = 0,
+	                 time_t now = ~0,
 	                 unsigned timeStepSize = 30,
 	                 time_t startOffset = 0,
 	                 totpHmac hmac = SHA1);
@@ -60,7 +60,7 @@ public:
 	                 size_t window,
 	                 std::function<bool(std::string const &)> cmpOtp,
 	                 unsigned digits,
-	                 time_t now = 0,
+	                 time_t now = ~0,
 	                 unsigned timeStepSize = 30,
 	                 time_t startOffset = 0,
 	                 totpHmac hmac = SHA1);
